@@ -3,30 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Resumo de Paletes</title>
+  <title>Calculador Avançado de Paletes</title>
   <style>
     :root {
       --primary-color: #2e7d32;
       --primary-dark: #27642a;
+      --secondary-color: #1565c0;
+      --error-color: #d32f2f;
       --light-bg: #e8f5e9;
       --light-border: #c8e6c9;
+      --dark-text: #212121;
+      --light-text: #757575;
     }
     
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Arial, sans-serif;
       background-color: #f5f5f5;
       margin: 0;
       padding: 20px;
       line-height: 1.6;
+      color: var(--dark-text);
     }
 
     .container {
-      max-width: 500px;
+      max-width: 800px;
       background: white;
       margin: auto;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      border-radius: 8px;
+      padding: 25px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      border-radius: 10px;
     }
 
     h1 {
@@ -35,28 +40,47 @@
       margin-bottom: 1.5rem;
     }
 
+    .form-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 650px) {
+      .form-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .form-group {
       margin-bottom: 1.5rem;
     }
 
     label {
-      font-weight: bold;
+      font-weight: 600;
       display: block;
       margin-bottom: 0.5rem;
     }
 
-    input[type="number"], select {
+    input[type="number"], 
+    input[type="text"],
+    select {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 16px;
       box-sizing: border-box;
+      transition: all 0.3s;
     }
 
-    input[type="number"]:focus, select:focus {
+    input[type="number"]:focus, 
+    input[type="text"]:focus,
+    select:focus {
       outline: 2px solid var(--primary-color);
       border-color: transparent;
+      box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
     }
 
     button {
@@ -64,49 +88,137 @@
       color: white;
       border: none;
       padding: 12px 20px;
-      width: 100%;
       font-size: 16px;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.3s;
-      margin-top: 0.5rem;
+      transition: all 0.3s;
+      font-weight: 600;
     }
 
     button:hover, button:focus {
       background-color: var(--primary-dark);
+      transform: translateY(-1px);
     }
 
     .button-group {
       display: flex;
-      gap: 10px;
+      gap: 12px;
+      margin-top: 1rem;
     }
 
     .secondary-button {
-      background-color: #757575;
+      background-color: var(--secondary-color);
     }
 
     .secondary-button:hover {
-      background-color: #616161;
+      background-color: #0d47a1;
+    }
+
+    .outline-button {
+      background-color: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .outline-button:hover {
+      background-color: var(--light-bg);
+    }
+
+    .error-button {
+      background-color: var(--error-color);
     }
 
     .palete-summary {
-      margin-top: 20px;
+      margin-top: 25px;
       background-color: var(--light-bg);
-      padding: 15px;
-      border-radius: 6px;
+      padding: 20px;
+      border-radius: 8px;
       border: 1px solid var(--light-border);
-      animation: fadeIn 0.3s ease-in;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .palete-summary h3 {
+      margin-top: 0;
+      color: var(--primary-color);
+      border-bottom: 1px solid var(--light-border);
+      padding-bottom: 10px;
     }
 
     .palete-summary p {
-      margin: 8px 0;
+      margin: 10px 0;
       font-size: 16px;
     }
 
+    .palete-summary .highlight {
+      font-weight: bold;
+      color: var(--primary-dark);
+    }
+
     .error-message {
-      color: #d32f2f;
+      color: var(--error-color);
       margin-top: 5px;
       font-size: 14px;
+    }
+
+    .success-message {
+      color: var(--primary-color);
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .history-item {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      transition: all 0.3s;
+    }
+
+    .history-item:hover {
+      background-color: #f9f9f9;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .history-container {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab.active {
+      border-bottom-color: var(--primary-color);
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .config-section {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
     }
 
     @keyframes fadeIn {
@@ -122,101 +234,204 @@
       .button-group {
         flex-direction: column;
       }
+      
+      .button-group button {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Resumo de Paletes</h1>
+    <h1>Calculador Avançado de Paletes</h1>
 
-    <div class="form-group">
-      <label for="total-fardos">Total:</label>
-      <input 
-        type="number" 
-        id="total-fardos" 
-        placeholder="Digite a quantidade" 
-        min="1" 
-        step="1" 
-        inputmode="numeric"
-        aria-describedby="input-help"
-      />
-      <span id="input-help" class="error-message" aria-live="polite"></span>
+    <div class="tabs">
+      <div class="tab active" onclick="openTab('calculator')">Calculadora</div>
+      <div class="tab" onclick="openTab('history')">Histórico</div>
+      <div class="tab" onclick="openTab('config')">Configurações</div>
     </div>
 
-    <div class="form-group">
-      <label for="tipo-carga">Tipo de Carga:</label>
-      <select id="tipo-carga" aria-label="Selecione o tipo de carga">
-        <option value="fardos">Fardos</option>
-        <option value="sacos">Sacos</option>
-      </select>
+    <div id="calculator" class="tab-content active">
+      <div class="form-section">
+        <div class="form-group">
+          <label for="descricao-carga">Descrição da Carga:</label>
+          <input 
+            type="text" 
+            id="descricao-carga" 
+            placeholder="Ex: Algodão, Soja, etc."
+            aria-label="Descrição da carga"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="tipo-carga">Tipo de Carga:</label>
+          <select id="tipo-carga" aria-label="Selecione o tipo de carga">
+            <option value="fardos">Fardos</option>
+            <option value="sacos">Sacos</option>
+            <option value="caixas">Caixas</option>
+            <option value="unidades">Unidades</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-group">
+          <label for="total-itens">Quantidade Total:</label>
+          <input 
+            type="number" 
+            id="total-itens" 
+            placeholder="Digite a quantidade" 
+            min="1" 
+            step="1" 
+            inputmode="numeric"
+            aria-describedby="input-help"
+          />
+          <span id="input-help" class="error-message" aria-live="polite"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="capacidade-palete">Capacidade por Palete:</label>
+          <input 
+            type="number" 
+            id="capacidade-palete" 
+            placeholder="Itens por palete" 
+            min="1" 
+            step="1" 
+            value="50"
+            aria-label="Capacidade por palete"
+          />
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button onclick="calcularPaletes()" id="calcular-btn">Calcular Paletes</button>
+        <button onclick="adicionarAoHistorico()" class="secondary-button">Salvar Cálculo</button>
+        <button onclick="limparFormulario()" class="outline-button">Limpar</button>
+      </div>
+
+      <div id="resumo-paletes" aria-live="polite"></div>
     </div>
 
-    <div class="button-group">
-      <button onclick="calcularPaletes()" id="calcular-btn">Calcular Paletes</button>
-      <button onclick="limparFormulario()" class="secondary-button">Limpar</button>
+    <div id="history" class="tab-content">
+      <h3>Histórico de Cálculos</h3>
+      <div class="button-group">
+        <button onclick="limparHistorico()" class="error-button">Limpar Histórico</button>
+        <button onclick="exportarHistorico()" class="secondary-button">Exportar CSV</button>
+      </div>
+      <div id="historico-container" class="history-container"></div>
     </div>
 
-    <div id="resumo-paletes" aria-live="polite"></div>
+    <div id="config" class="tab-content">
+      <h3>Configurações</h3>
+      
+      <div class="config-section">
+        <div class="form-group">
+          <label for="default-capacity">Capacidade Padrão por Palete:</label>
+          <input 
+            type="number" 
+            id="default-capacity" 
+            min="1" 
+            step="1" 
+            value="50"
+            aria-label="Capacidade padrão por palete"
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="default-type">Tipo de Carga Padrão:</label>
+          <select id="default-type" aria-label="Tipo de carga padrão">
+            <option value="fardos">Fardos</option>
+            <option value="sacos">Sacos</option>
+            <option value="caixas">Caixas</option>
+            <option value="unidades">Unidades</option>
+          </select>
+        </div>
+        
+        <button onclick="salvarConfiguracoes()">Salvar Configurações</button>
+        <span id="config-message" class="success-message"></span>
+      </div>
+      
+      <div class="config-section">
+        <h4>Exportar/Importar Dados</h4>
+        <div class="button-group">
+          <button onclick="exportarDados()" class="secondary-button">Exportar Todos Dados</button>
+          <button onclick="document.getElementById('import-file').click()">Importar Dados</button>
+          <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importarDados(this)"/>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
+    // Variáveis globais
+    let calculosHistorico = JSON.parse(localStorage.getItem('paleteCalculos')) || [];
+    let configuracoes = JSON.parse(localStorage.getItem('paleteConfig')) || {
+      capacidadePadrao: 50,
+      tipoPadrao: 'fardos'
+    };
+
+    // Inicialização
     document.addEventListener('DOMContentLoaded', function() {
-      // Adiciona validação em tempo real
-      const inputFardos = document.getElementById('total-fardos');
+      carregarConfiguracoes();
+      carregarHistorico();
+      
+      // Configurar validação em tempo real
+      const inputItens = document.getElementById('total-itens');
       const errorMessage = document.getElementById('input-help');
       
-      inputFardos.addEventListener('input', function() {
+      inputItens.addEventListener('input', function() {
         const valor = parseInt(this.value);
         
         if (this.value === '') {
           errorMessage.textContent = '';
-        } else if (isNaN(valor) {
+        } else if (isNaN(valor)) {
           errorMessage.textContent = 'Por favor, digite apenas números';
         } else if (valor <= 0) {
           errorMessage.textContent = 'O valor deve ser maior que zero';
         } else {
           errorMessage.textContent = '';
-          // Atualiza automaticamente quando o valor é válido
-          if (this.value.length > 2) {
-            calcularPaletes();
-          }
         }
       });
       
       // Permite usar Enter para calcular
-      inputFardos.addEventListener('keypress', function(e) {
+      inputItens.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
           calcularPaletes();
         }
       });
     });
 
-    function calcularPaletesPorUnidade(total) {
-      const capacidadePalete = 50;
-      return Math.ceil(total / capacidadePalete);
+    // Funções de cálculo
+    function calcularPaletesPorUnidade(total, capacidade) {
+      return Math.ceil(total / capacidade);
     }
 
-    function gerarResumoPaletes(total, tipo = 'fardos') {
-      const capacidadePalete = 50;
-      const totalPaletes = calcularPaletesPorUnidade(total);
-      const tipoTexto = tipo === 'fardos' ? 'fardos' : 'sacos';
+    function gerarResumoPaletes(dados) {
+      const totalPaletes = calcularPaletesPorUnidade(dados.total, dados.capacidade);
+      const tipoTexto = dados.tipo === 'fardos' ? 'fardos' : 
+                       dados.tipo === 'sacos' ? 'sacos' :
+                       dados.tipo === 'caixas' ? 'caixas' : 'unidades';
 
       return `
         <div class="palete-summary">
-          <p><strong>Total ${tipoTexto}:</strong> ${total.toLocaleString('pt-BR')}</p>
-          <p><strong>Capacidade por palete:</strong> ${capacidadePalete.toLocaleString('pt-BR')} ${tipoTexto}</p>
-          <p><strong>Total paletes necessários:</strong> ${totalPaletes.toLocaleString('pt-BR')}</p>
+          <h3>${dados.descricao || 'Resumo da Carga'}</h3>
+          <p><strong>Total ${tipoTexto}:</strong> <span class="highlight">${dados.total.toLocaleString('pt-BR')}</span></p>
+          <p><strong>Capacidade por palete:</strong> <span class="highlight">${dados.capacidade.toLocaleString('pt-BR')} ${tipoTexto}</span></p>
+          <p><strong>Total paletes necessários:</strong> <span class="highlight">${totalPaletes.toLocaleString('pt-BR')}</span></p>
+          <p><strong>Data:</strong> ${new Date(dados.data).toLocaleString('pt-BR')}</p>
         </div>
       `;
     }
 
     function calcularPaletes() {
-      const valorInput = document.getElementById("total-fardos").value;
+      const valorInput = document.getElementById("total-itens").value;
       const valor = parseInt(valorInput);
       const tipo = document.getElementById("tipo-carga").value;
+      const capacidade = parseInt(document.getElementById("capacidade-palete").value) || 50;
+      const descricao = document.getElementById("descricao-carga").value.trim();
       const container = document.getElementById("resumo-paletes");
 
-      if (!valorInput || isNaN(valor) {
+      if (!valorInput || isNaN(valor)) {
         container.innerHTML = `
           <div class="error-message" role="alert">
             Por favor, insira um número válido
@@ -234,18 +449,253 @@
         return;
       }
 
-      const resumoHTML = gerarResumoPaletes(valor, tipo);
+     if (isNaN(capacidade)) {
+        container.innerHTML = `
+          <div class="error-message" role="alert">
+            Capacidade por palete inválida
+          </div>
+        `;
+        return;
+      }
+
+      const dadosCalculo = {
+        descricao,
+        tipo,
+        total: valor,
+        capacidade,
+        data: new Date().toISOString()
+      };
+
+      const resumoHTML = gerarResumoPaletes(dadosCalculo);
       container.innerHTML = resumoHTML;
       
       // Foca no resultado para leitores de tela
+      container.setAttribute('tabindex', '-1');
       container.focus();
     }
 
+    // Funções do histórico
+    function adicionarAoHistorico() {
+      const resumo = document.getElementById("resumo-paletes").innerHTML;
+      if (!resumo || resumo.includes('error-message')) return;
+
+      const valor = parseInt(document.getElementById("total-itens").value);
+      const tipo = document.getElementById("tipo-carga").value;
+      const capacidade = parseInt(document.getElementById("capacidade-palete").value) || 50;
+      const descricao = document.getElementById("descricao-carga").value.trim();
+
+      const calculo = {
+        id: Date.now(),
+        descricao,
+        tipo,
+        total: valor,
+        capacidade,
+        data: new Date().toISOString()
+      };
+
+      calculosHistorico.unshift(calculo);
+      salvarHistorico();
+      carregarHistorico();
+      
+      // Mostrar mensagem de sucesso
+      const container = document.getElementById("resumo-paletes");
+      const mensagem = document.createElement('div');
+      mensagem.className = 'success-message';
+      mensagem.textContent = 'Cálculo salvo no histórico!';
+      container.appendChild(mensagem);
+      
+      setTimeout(() => {
+        mensagem.remove();
+      }, 3000);
+    }
+
+    function carregarHistorico() {
+      const container = document.getElementById("historico-container");
+      container.innerHTML = '';
+
+      if (calculosHistorico.length === 0) {
+        container.innerHTML = '<p>Nenhum cálculo no histórico ainda.</p>';
+        return;
+      }
+
+      calculosHistorico.forEach(calculo => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        
+        const tipoTexto = calculo.tipo === 'fardos' ? 'fardos' : 
+                        calculo.tipo === 'sacos' ? 'sacos' :
+                        calculo.tipo === 'caixas' ? 'caixas' : 'unidades';
+        
+        const totalPaletes = calcularPaletesPorUnidade(calculo.total, calculo.capacidade);
+        
+        item.innerHTML = `
+          <p><strong>${calculo.descricao || 'Sem descrição'}</strong></p>
+          <p>${calculo.total.toLocaleString('pt-BR')} ${tipoTexto} • ${totalPaletes} paletes</p>
+          <p><small>${new Date(calculo.data).toLocaleString('pt-BR')}</small></p>
+          <button onclick="visualizarCalculo(${calculo.id})" class="outline-button" style="padding: 5px 10px; font-size: 14px;">Ver Detalhes</button>
+          <button onclick="removerDoHistorico(${calculo.id})" class="error-button" style="padding: 5px 10px; font-size: 14px;">Remover</button>
+        `;
+        
+        container.appendChild(item);
+      });
+    }
+
+    function visualizarCalculo(id) {
+      const calculo = calculosHistorico.find(item => item.id === id);
+      if (!calculo) return;
+
+      document.getElementById("descricao-carga").value = calculo.descricao || '';
+      document.getElementById("tipo-carga").value = calculo.tipo;
+      document.getElementById("total-itens").value = calculo.total;
+      document.getElementById("capacidade-palete").value = calculo.capacidade;
+      
+      calcularPaletes();
+      openTab('calculator');
+    }
+
+    function removerDoHistorico(id) {
+      calculosHistorico = calculosHistorico.filter(item => item.id !== id);
+      salvarHistorico();
+      carregarHistorico();
+    }
+
+    function limparHistorico() {
+      if (confirm('Tem certeza que deseja limpar todo o histórico?')) {
+        calculosHistorico = [];
+        salvarHistorico();
+        carregarHistorico();
+      }
+    }
+
+    function salvarHistorico() {
+      localStorage.setItem('paleteCalculos', JSON.stringify(calculosHistorico));
+    }
+
+    // Funções de configuração
+    function carregarConfiguracoes() {
+      document.getElementById("default-capacity").value = configuracoes.capacidadePadrao || 50;
+      document.getElementById("default-type").value = configuracoes.tipoPadrao || 'fardos';
+      
+      // Aplicar configurações padrão
+      document.getElementById("capacidade-palete").value = configuracoes.capacidadePadrao || 50;
+      document.getElementById("tipo-carga").value = configuracoes.tipoPadrao || 'fardos';
+    }
+
+    function salvarConfiguracoes() {
+      configuracoes = {
+        capacidadePadrao: parseInt(document.getElementById("default-capacity").value) || 50,
+        tipoPadrao: document.getElementById("default-type").value
+      };
+      
+      localStorage.setItem('paleteConfig', JSON.stringify(configuracoes));
+      
+      // Mostrar mensagem de sucesso
+      const mensagem = document.getElementById("config-message");
+      mensagem.textContent = 'Configurações salvas com sucesso!';
+      
+      setTimeout(() => {
+        mensagem.textContent = '';
+      }, 3000);
+    }
+
+    // Funções de exportação/importação
+    function exportarHistorico() {
+      if (calculosHistorico.length === 0) {
+        alert('Nenhum dado para exportar');
+        return;
+      }
+      
+      let csv = 'Descrição,Tipo,Quantidade,Capacidade por Palete,Total Paletes,Data\n';
+      
+      calculosHistorico.forEach(calculo => {
+        const tipoTexto = calculo.tipo === 'fardos' ? 'Fardos' : 
+                        calculo.tipo === 'sacos' ? 'Sacos' :
+                        calculo.tipo === 'caixas' ? 'Caixas' : 'Unidades';
+        
+        const totalPaletes = calcularPaletesPorUnidade(calculo.total, calculo.capacidade);
+        const dataFormatada = new Date(calculo.data).toLocaleString('pt-BR');
+        
+        csv += `"${calculo.descricao || ''}",${tipoTexto},${calculo.total},${calculo.capacidade},${totalPaletes},"${dataFormatada}"\n`;
+      });
+      
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `historico_paletes_${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+    }
+
+    function exportarDados() {
+      const dados = {
+        configuracoes,
+        historico: calculosHistorico
+      };
+      
+      const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `dados_paletes_${new Date().toISOString().slice(0,10)}.json`;
+      link.click();
+    }
+
+    function importarDados(input) {
+      const file = input.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const dados = JSON.parse(e.target.result);
+          
+          if (confirm('Deseja importar configurações e histórico? Isso substituirá seus dados atuais.')) {
+            if (dados.configuracoes) {
+              configuracoes = dados.configuracoes;
+              localStorage.setItem('paleteConfig', JSON.stringify(configuracoes));
+              carregarConfiguracoes();
+            }
+            
+            if (dados.historico) {
+              calculosHistorico = dados.historico;
+              salvarHistorico();
+              carregarHistorico();
+            }
+            
+            alert('Dados importados com sucesso!');
+          }
+        } catch (error) {
+          alert('Erro ao importar arquivo: ' + error.message);
+        }
+      };
+      reader.readAsText(file);
+      input.value = ''; // Permite reimportar o mesmo arquivo
+    }
+
+    // Funções de UI
     function limparFormulario() {
-      document.getElementById("total-fardos").value = '';
+      document.getElementById("descricao-carga").value = '';
+      document.getElementById("total-itens").value = '';
       document.getElementById("resumo-paletes").innerHTML = '';
       document.getElementById("input-help").textContent = '';
-      document.getElementById("total-fardos").focus();
+      document.getElementById("descricao-carga").focus();
+    }
+
+    function openTab(tabName) {
+      // Esconder todas as tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Mostrar a tab selecionada
+      document.getElementById(tabName).classList.add('active');
+      
+      // Atualizar tabs ativas
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      event.currentTarget.classList.add('active');
     }
   </script>
 </body>
