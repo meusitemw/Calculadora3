@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resumo de Paletes</title>
+  <style>
+    :root {
+      --primary-color: #2e7d32;
+      --primary-dark: #27642a;
+      --light-bg: #e8f5e9;
+      --light-border: #c8e6c9;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 500px;
+      background: white;
+      margin: auto;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="number"], select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    input[type="number"]:focus, select:focus {
+      outline: 2px solid var(--primary-color);
+      border-color: transparent;
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      width: 100%;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 0.5rem;
+    }
+
+    button:hover, button:focus {
+      background-color: var(--primary-dark);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .secondary-button {
+      background-color: #757575;
+    }
+
+    .secondary-button:hover {
+      background-color: #616161;
+    }
+
+    .palete-summary {
+      margin-top: 20px;
+      background-color: var(--light-bg);
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid var(--light-border);
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .palete-summary p {
+      margin: 8px 0;
+      font-size: 16px;
+    }
+
+    .error-message {
+      color: #d32f2f;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Resumo de Paletes</h1>
+
+    <div class="form-group">
+      <label for="total-fardos">Total:</label>
+      <input 
+        type="number" 
+        id="total-fardos" 
+        placeholder="Digite a quantidade" 
+        min="1" 
+        step="1" 
+        inputmode="numeric"
+        aria-describedby="input-help"
+      />
+      <span id="input-help" class="error-message" aria-live="polite"></span>
+    </div>
+
+    <div class="form-group">
+      <label for="tipo-carga">Tipo de Carga:</label>
+      <select id="tipo-carga" aria-label="Selecione o tipo de carga">
+        <option value="fardos">Fardos</option>
+        <option value="sacos">Sacos</option>
+      </select>
+    </div>
+
+    <div class="button-group">
+      <button onclick="calcularPaletes()" id="calcular-btn">Calcular Paletes</button>
+      <button onclick="limparFormulario()" class="secondary-button">Limpar</button>
+    </div>
+
+    <div id="resumo-paletes" aria-live="polite"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Adiciona validação em tempo real
+      const inputFardos = document.getElementById('total-fardos');
+      const errorMessage = document.getElementById('input-help');
+      
+      inputFardos.addEventListener('input', function() {
+        const valor = parseInt(this.value);
+        
+        if (this.value === '') {
+          errorMessage.textContent = '';
+        } else if (isNaN(valor) {
+          errorMessage.textContent = 'Por favor, digite apenas números';
+        } else if (valor <= 0) {
+          errorMessage.textContent = 'O valor deve ser maior que zero';
+        } else {
+          errorMessage.textContent = '';
+          // Atualiza automaticamente quando o valor é válido
+          if (this.value.length > 2) {
+            calcularPaletes();
+          }
+        }
+      });
+      
+      // Permite usar Enter para calcular
+      inputFardos.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          calcularPaletes();
+        }
+      });
+    });
+
+    function calcularPaletesPorUnidade(total) {
+      const capacidadePalete = 50;
+      return Math.ceil(total / capacidadePalete);
+    }
+
+    function gerarResumoPaletes(total, tipo = 'fardos') {
+      const capacidadePalete = 50;
+      const totalPaletes = calcularPaletesPorUnidade(total);
+      const tipoTexto = tipo === 'fardos' ? 'fardos' : 'sacos';
+
+      return `
+        <div class="palete-summary">
+          <p><strong>Total ${tipoTexto}:</strong> ${total.toLocaleString('pt-BR')}</p>
+          <p><strong>Capacidade por palete:</strong> ${capacidadePalete.toLocaleString('pt-BR')} ${tipoTexto}</p>
+          <p><strong>Total paletes necessários:</strong> ${totalPaletes.toLocaleString('pt-BR')}</p>
+        </div>
+      `;
+    }
+
+    function calcularPaletes() {
+      const valorInput = document.getElementById("total-fardos").value;
+      const valor = parseInt(valorInput);
+      const tipo = document.getElementById("tipo-carga").value;
+      const container = document.getElementById("resumo-paletes");
+
+      if (!valorInput || isNaN(valor) {
+        container.innerHTML = `
+          <div class="error-message" role="alert">
+            Por favor, insira um número válido
+          </div>
+        `;
+        return;
+      }
+
+      if (valor <= 0) {
+        container.innerHTML = `
+          <div class="error-message" role="alert">
+            O valor deve ser maior que zero
+          </div>
+        `;
+        return;
+      }
+
+      const resumoHTML = gerarResumoPaletes(valor, tipo);
+      container.innerHTML = resumoHTML;
+      
+      // Foca no resultado para leitores de tela
+      container.focus();
+    }
+
+    function limparFormulario() {
+      document.getElementById("total-fardos").value = '';
+      document.getElementById("resumo-paletes").innerHTML = '';
+      document.getElementById("input-help").textContent = '';
+      document.getElementById("total-fardos").focus();
+    }
+  </script>
+</body>
+</html>
