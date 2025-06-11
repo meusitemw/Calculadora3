@@ -4,6 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Calculador Avançado de Paletes</title>
+  
+  <!-- Meta tags PWA -->
+  <meta name="theme-color" content="#2e7d32">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Calculador de Paletes">
+  <link rel="apple-touch-icon" href="icon-192x192.png">
+  <link rel="manifest" href="manifest.json">
+  
   <style>
     :root {
       --primary-color: #2e7d32;
@@ -221,6 +230,23 @@
       margin-bottom: 20px;
     }
 
+    #installButton {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+      display: none;
+      z-index: 1000;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -362,6 +388,9 @@
     </div>
   </div>
 
+  <!-- Botão flutuante de instalação -->
+  <button id="installButton" title="Instalar aplicativo">📲</button>
+
   <script>
     // Variáveis globais
     let calculosHistorico = JSON.parse(localStorage.getItem('paleteCalculos')) || [];
@@ -369,6 +398,7 @@
       capacidadePadrao: 50,
       tipoPadrao: 'fardos'
     };
+    let deferredPrompt;
 
     // Inicialização
     document.addEventListener('DOMContentLoaded', function() {
@@ -399,6 +429,31 @@
           calcularPaletes();
         }
       });
+
+      // Evento para instalação PWA
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('installButton').style.display = 'block';
+      });
+    });
+
+    // Função para instalar o PWA
+    document.getElementById('installButton').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          document.getElementById('installButton').style.display = 'none';
+        }
+        deferredPrompt = null;
+      }
+    });
+
+    // Verifica se o app está instalado
+    window.addEventListener('appinstalled', () => {
+      console.log('Aplicativo instalado com sucesso!');
+      document.getElementById('installButton').style.display = 'none';
     });
 
     // Funções de cálculo
@@ -449,7 +504,7 @@
         return;
       }
 
-     if (isNaN(capacidade)) {
+      if (isNaN(capacidade)) {
         container.innerHTML = `
           <div class="error-message" role="alert">
             Capacidade por palete inválida
@@ -696,6 +751,15 @@
       });
       
       event.currentTarget.classList.add('active');
+    }
+
+    // Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(registration => console.log('ServiceWorker registrado com sucesso!'))
+          .catch(err => console.log('Falha ao registrar ServiceWorker:', err));
+      });
     }
   </script>
 </body>
