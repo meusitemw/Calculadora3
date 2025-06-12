@@ -1,9 +1,7 @@
-const CACHE_NAME = 'paletes-cache-v2';
+const CACHE_NAME = 'paletes-cache-v1';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/styles.css',
-  '/script.js',
   '/icon-192x192.png',
   '/icon-512x512.png',
   '/manifest.json'
